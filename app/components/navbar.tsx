@@ -2,11 +2,20 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const toggleMenu = () => setIsOpen(!isOpen);
+
+  const pathname = usePathname(); // untuk mengecek path saat ini
+
+  const menuItems = [
+    { name: "Beranda", href: "/" },
+    { name: "Category", href: "/category" },
+    { name: "Daftar Harga", href: "/daftar-harga" },
+  ];
 
   // Variants animasi
   const menuVariants = {
@@ -18,7 +27,6 @@ export default function Navbar() {
   return (
     <nav className="bg-white/50 backdrop-blur-md fixed w-full top-0 z-50 shadow-md">
       <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-
         {/* Logo Kiri */}
         <div className="flex items-center">
           <Link href="/">
@@ -31,32 +39,30 @@ export default function Navbar() {
             />
           </Link>
           <Link href="/">
-            <span className="text-black font-bold text-lg cursor-pointer">4RJCUS</span>
+            <span className="text-black font-bold text-lg cursor-pointer">
+              4RJCUS
+            </span>
           </Link>
         </div>
 
         {/* Menu Tengah Desktop */}
         <ul className="hidden md:flex space-x-10 text-black font-medium">
-          <li>
-            <Link href="/" className="hover:text-orange-400 transition-colors">
-              Beranda
-            </Link>
-          </li>
-          <li>
-            <Link href="/category" className="hover:text-orange-400 transition-colors">
-              Category
-            </Link>
-          </li>
-          <li>
-            <Link href="/daftar-harga" className="hover:text-orange-400 transition-colors">
-              Daftar Harga
-            </Link>
-          </li>
+          {menuItems.map((item) => (
+            <li key={item.href}>
+              <Link
+                href={item.href}
+                className={`relative after:block after:h-0.5 after:bg-orange-500 after:transition-all after:duration-300 after:scale-x-0 hover:after:scale-x-100 after:origin-left ${
+                  pathname === item.href ? "after:scale-x-100" : ""
+                }`}
+              >
+                {item.name}
+              </Link>
+            </li>
+          ))}
         </ul>
 
         {/* Logo Kanan / Mobile Hamburger */}
         <div className="flex items-center">
-          {/** Hamburger hanya tampil di mobile */}
           <button
             className="md:hidden text-black text-2xl font-bold"
             onClick={toggleMenu}
@@ -64,16 +70,22 @@ export default function Navbar() {
             {isOpen ? "×" : "≡"} {/* tanda X untuk close, ≡ untuk menu */}
           </button>
 
-          {/** Logo kanan desktop */}
+          {/* Logo kanan desktop */}
           <div className="hidden md:flex ml-4">
             <Link href="/">
-              <Image src="/game.png" alt="Logo" width={40} height={40} className="cursor-pointer" />
+              <Image
+                src="/game.png"
+                alt="Logo"
+                width={40}
+                height={40}
+                className="cursor-pointer"
+              />
             </Link>
           </div>
         </div>
       </div>
 
-      {/* Mobile Menu Dropdown dengan animasi */}
+      {/* Mobile Menu Dropdown */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -85,21 +97,19 @@ export default function Navbar() {
             transition={{ duration: 0.3 }}
           >
             <ul className="flex flex-col items-center space-y-4 py-6 text-black font-medium">
-              <li>
-                <Link href="/" onClick={toggleMenu} className="hover:text-orange-400 transition-colors">
-                  Beranda
-                </Link>
-              </li>
-              <li>
-                <Link href="/category" onClick={toggleMenu} className="hover:text-orange-400 transition-colors">
-                  Category
-                </Link>
-              </li>
-              <li>
-                <Link href="/daftar-harga" onClick={toggleMenu} className="hover:text-orange-400 transition-colors">
-                  Daftar Harga
-                </Link>
-              </li>
+              {menuItems.map((item) => (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    onClick={toggleMenu}
+                    className={`relative after:block after:h-0.5 after:bg-orange-500 after:transition-all after:duration-300 after:scale-x-0 hover:after:scale-x-100 after:origin-left ${
+                      pathname === item.href ? "after:scale-x-100" : ""
+                    }`}
+                  >
+                    {item.name}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </motion.div>
         )}

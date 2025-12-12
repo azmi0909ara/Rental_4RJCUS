@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import Navbar from "./components/navbar";
 
 export default function Home() {
-
   const fadeUp = {
     hidden: { opacity: 0, y: 50 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.8 } },
@@ -11,7 +10,7 @@ export default function Home() {
 
   return (
     <main className="relative min-h-screen text-white">
-<Navbar />
+      <Navbar />
       {/* HERO SECTION */}
       <section className="relative h-[85vh] w-full flex items-center justify-center">
         {/* BACKGROUND IMAGE */}
@@ -24,7 +23,7 @@ export default function Home() {
         <div className="absolute inset-0 bg-black/60"></div>
 
         {/* HERO CONTENT */}
-        <motion.div 
+        <motion.div
           className="relative max-w-3xl text-center px-6 space-y-6"
           initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -38,8 +37,8 @@ export default function Home() {
           </h1>
 
           <p className="text-lg md:text-xl text-gray-200 max-w-xl mx-auto">
-            Hidupkan Lagi Kenangan Seru Bareng Temen Dan Keluarga.
-            Sewa Playstation 3 & 4 Mudah Tanpa Ribet!
+            Hidupkan Lagi Kenangan Seru Bareng Temen Dan Keluarga. Sewa
+            Playstation 3 & 4 Mudah Tanpa Ribet!
           </p>
 
           <div className="flex justify-center gap-4 mt-6">
@@ -54,7 +53,10 @@ export default function Home() {
 
             <motion.button
               className="px-6 py-3 rounded-lg font-semibold border text-white border-white/70"
-              whileHover={{ scale: 1.05, backgroundColor: "rgba(255,255,255,0.2)" }}
+              whileHover={{
+                scale: 1.05,
+                backgroundColor: "rgba(255,255,255,0.2)",
+              }}
               whileTap={{ scale: 0.95 }}
             >
               Lihat Paket
@@ -85,8 +87,14 @@ export default function Home() {
         <div className="grid md:grid-cols-3 gap-10 max-w-6xl mx-auto">
           {[
             { title: "Sedia", features: ["Playstation 3", "Playstation 4"] },
-            { title: "Playstation 3", features: ["Sewa Inap + TV", "Sewa Inap PS Saja"] },
-            { title: "Playstation 4", features: ["Sewa Inap + TV", "Sewa Inap PS Saja"] },
+            {
+              title: "Playstation 3",
+              features: ["Sewa Inap + TV", "Sewa Inap PS Saja"],
+            },
+            {
+              title: "Playstation 4",
+              features: ["Sewa Inap + TV", "Sewa Inap PS Saja"],
+            },
           ].map((ps, index) => (
             <motion.div
               key={index}
@@ -156,8 +164,14 @@ export default function Home() {
               variants={fadeUp}
               transition={{ delay: i * 0.2 }}
             >
-              <img src={item.icon} alt={item.title} className="w-16 h-16 mb-4" />
-              <h3 className="text-xl font-bold" style={{ color: "#FFD7A1" }}>{item.title}</h3>
+              <img
+                src={item.icon}
+                alt={item.title}
+                className="w-16 h-16 mb-4"
+              />
+              <h3 className="text-xl font-bold" style={{ color: "#FFD7A1" }}>
+                {item.title}
+              </h3>
               <p className="text-gray-300 mt-2">{item.desc}</p>
             </motion.div>
           ))}
@@ -166,7 +180,13 @@ export default function Home() {
 
       {/* FOOTER */}
       <footer className="text-center py-6 text-gray-400 text-sm bg-black/30">
-        © {new Date().getFullYear()} Rental Playstation 4RJCUS — All Rights Reserved.
+        © {new Date().getFullYear()} Rental Playstation 4RJCUS — All Rights
+        Reserved.
+        <div className="mt-2">
+          <a href="/login" className="text-gray-500 hover:text-white text-xs">
+            Admin Login
+          </a>
+        </div>
       </footer>
     </main>
   );
