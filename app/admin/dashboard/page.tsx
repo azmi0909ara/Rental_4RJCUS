@@ -113,7 +113,7 @@ export default function AdminDashboard() {
   ];
 
   const getStatusBadge = (status: string) => {
-    const styles = {
+    const styles: { [key: string]: string } = {
       active: "bg-green-100 text-green-800 border-green-300",
       pending: "bg-yellow-100 text-yellow-800 border-yellow-300",
       completed: "bg-gray-100 text-gray-800 border-gray-300",
