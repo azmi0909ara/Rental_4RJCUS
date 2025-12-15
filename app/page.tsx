@@ -183,7 +183,7 @@ export default function Home() {
         © {new Date().getFullYear()} Rental Playstation 4RJCUS — All Rights
         Reserved.
         <div className="mt-2">
-          <a href="/login" className="text-gray-500 hover:text-white text-xs">
+          <a href="/login" className="text-gray-600 hover:text-white text-xs">
             Admin Login
           </a>
         </div>
