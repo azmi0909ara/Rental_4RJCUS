@@ -26,16 +26,16 @@ export default function Navbar() {
 
   return (
     <nav className="bg-white/50 backdrop-blur-md fixed w-full top-0 z-50 shadow-md">
-      <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div className="max-w-6xl mx-auto px-4 py flex items-center justify-between">
         {/* Logo Kiri */}
         <div className="flex items-center">
           <Link href="/">
             <Image
-              src="/game.png"
+              src="/logo.png"
               alt="Logo"
-              width={40}
+              width={60}
               height={40}
-              className="mr-2 cursor-pointer"
+              className="mr-2 cursor-pointer object-cover"
             />
           </Link>
           <Link href="/">
@@ -74,11 +74,11 @@ export default function Navbar() {
           <div className="hidden md:flex ml-4">
             <Link href="/">
               <Image
-                src="/game.png"
+                src="/logo.png"
                 alt="Logo"
-                width={40}
+                width={60}
                 height={40}
-                className="cursor-pointer"
+                className="cursor-pointer object-cover"
               />
             </Link>
           </div>

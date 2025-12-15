@@ -107,7 +107,6 @@ export default function AdminDashboard() {
     { id: "inventory", label: "Inventory PS", icon: Package },
     { id: "customers", label: "Pelanggan", icon: Users },
     { id: "finance", label: "Keuangan", icon: DollarSign },
-    { id: "calendar", label: "Kalender", icon: Calendar },
     { id: "analytics", label: "Analitik", icon: BarChart3 },
     { id: "settings", label: "Pengaturan", icon: Settings },
   ];
