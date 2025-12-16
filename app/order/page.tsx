@@ -3,24 +3,79 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { db } from "@/lib/firebaseConfig";
 
 export default function OrderPage() {
   const router = useRouter();
-
-  const [form, setForm] = useState({
+  const [error, setError] = useState(false);
+  const [form, setForm] = useState<{
+    nama: string;
+    telepon: string;
+    email: string;
+    jaminan: string;
+    paket: {
+      tipe: "PS3" | "PS4";
+      label: string;
+      durasi: number;
+      harga: number;
+    } | null;
+  }>({
     nama: "",
     telepon: "",
     email: "",
     jaminan: "",
-    paket: "",
+    paket: null,
   });
 
   const [showModal, setShowModal] = useState(false);
+  const paketPS3 = [
+    { tipe: "PS3", label: "PS + TV", durasi: 12, harga: 50000 },
+    { tipe: "PS3", label: "PS + TV", durasi: 24, harga: 80000 },
+    { tipe: "PS3", label: "PS AJA", durasi: 12, harga: 25000 },
+    { tipe: "PS3", label: "PS AJA", durasi: 24, harga: 50000 },
+  ] as const;
+
+  const paketPS4 = [
+    { tipe: "PS4", label: "PS + TV", durasi: 12, harga: 180000 },
+    { tipe: "PS4", label: "PS + TV", durasi: 24, harga: 120000 },
+    { tipe: "PS4", label: "PS AJA", durasi: 12, harga: 50000 },
+    { tipe: "PS4", label: "PS AJA", durasi: 24, harga: 80000 },
+  ] as const;
 
   const handleChange = (e: any) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const handleSubmit = async () => {
+    if (
+      !form.nama ||
+      !form.telepon ||
+      !form.jaminan ||
+      !form.paket ||
+      !form.email
+    ) {
+      setError(true);
+      return;
+    }
+    try {
+      const docRef = await addDoc(collection(db, "orders"), {
+        nama: form.nama,
+        telepon: form.telepon,
+        email: form.email,
+        jaminan: form.jaminan,
+        paket: form.paket,
+        totalBayar: form.paket.harga,
+        orderCode: `ORD-${Date.now()}`,
+        status: "PENDING",
+        createdAt: serverTimestamp(),
+      });
+      router.push(`/bayar?orderId=${docRef.id}`);
+    } catch (error) {
+      console.error(error);
+      alert("Gagal Menyimpan error");
+    }
+  };
   const fadeUp = {
     hidden: { opacity: 0, y: 30 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
@@ -28,7 +83,6 @@ export default function OrderPage() {
 
   return (
     <main className="relative min-h-screen text-white">
-
       {/* BACKGROUND */}
       <div
         className="absolute inset-0 bg-cover bg-center brightness-90"
@@ -57,10 +111,11 @@ export default function OrderPage() {
 
         {/* CARD */}
         <div className="bg-[#141414]/90 backdrop-blur-md p-8 rounded-3xl shadow-2xl border border-[#FFA64D]/30 space-y-10">
-
           {/* DATA DIRI */}
           <section>
-            <h2 className="text-xl font-bold mb-4 text-[#FFA64D]">Data Penyewa</h2>
+            <h2 className="text-xl font-bold mb-4 text-[#FFA64D]">
+              Data Penyewa
+            </h2>
 
             <div className="grid md:grid-cols-2 gap-4">
               <input
@@ -123,98 +178,94 @@ export default function OrderPage() {
           </section>
 
           {/* PAKET */}
-<section>
-  <h2 className="text-xl font-bold mb-6 text-[#FFA64D]">
-    Pilih Paket (Satu Paket)
-  </h2>
+          <section>
+            <h2 className="text-xl font-bold mb-6 text-[#FFA64D]">
+              Pilih Paket (Satu Paket)
+            </h2>
 
-  <div className="grid md:grid-cols-2 gap-6 text-sm">
+            <div className="grid md:grid-cols-2 gap-6 text-sm">
+              {/* PS3 */}
+              <div className="bg-black/40 p-5 rounded-xl border border-white/10">
+                <h3 className="font-semibold text-[#FFD7A1] mb-4">
+                  SEWA INAP PS 3
+                </h3>
 
-    {/* PS3 */}
-    <div className="bg-black/40 p-5 rounded-xl border border-white/10">
-      <h3 className="font-semibold text-[#FFD7A1] mb-4">
-        SEWA INAP PS 3
-      </h3>
+                <div className="space-y-2">
+                  {paketPS3.map((item) => {
+                    const selected =
+                      form.paket?.tipe === item.tipe &&
+                      form.paket?.label === item.label &&
+                      form.paket?.durasi === item.durasi;
 
-      <div className="space-y-2">
-        {[
-          "PS3 • PS + TV • 12 jam • 50k",
-          "PS3 • PS + TV • 24 jam • 80k",
-          "PS3 • PS AJA • 12 jam • 25k",
-          "PS3 • PS AJA • 24 jam • 50k",
-        ].map((item) => (
-          <label
-            key={item}
-            className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer
-              ${
-                form.paket === item
-                  ? "bg-orange-400 text-black border-orange-400"
-                  : "bg-black/40 border-white/10"
-              }`}
-          >
-            <input
-              type="radio"
-              name="paket"
-              value={item}
-              onChange={handleChange}
-              className="hidden"
-            />
-            {item}
-          </label>
-        ))}
-      </div>
-    </div>
+                    return (
+                      <label
+                        key={`${item.label}-${item.durasi}`}
+                        onClick={() => setForm({ ...form, paket: item })}
+                        className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer
+        ${
+          selected
+            ? "bg-orange-400 text-black border-orange-400"
+            : "bg-black/40 border-white/10"
+        }`}
+                      >
+                        {item.tipe} • {item.label} • {item.durasi} jam •{" "}
+                        {item.harga.toLocaleString("id-ID")}
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
 
-    {/* PS4 */}
-    <div className="bg-black/40 p-5 rounded-xl border border-white/10">
-      <h3 className="font-semibold text-[#FFD7A1] mb-4">
-        SEWA INAP PS 4
-      </h3>
+              {/* PS4 */}
+              <div className="bg-black/40 p-5 rounded-xl border border-white/10">
+                <h3 className="font-semibold text-[#FFD7A1] mb-4">
+                  SEWA INAP PS 4
+                </h3>
 
-      <div className="space-y-2">
-        {[
-          "PS4 • PS + TV • 12 jam • 180k",
-          "PS4 • PS + TV • 24 jam • 120k",
-          "PS4 • PS AJA • 12 jam • 50k",
-          "PS4 • PS AJA • 24 jam • 80k",
-        ].map((item) => (
-          <label
-            key={item}
-            className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer
-              ${
-                form.paket === item
-                  ? "bg-orange-400 text-black border-orange-400"
-                  : "bg-black/40 border-white/10"
-              }`}
-          >
-            <input
-              type="radio"
-              name="paket"
-              value={item}
-              onChange={handleChange}
-              className="hidden"
-            />
-            {item}
-          </label>
-        ))}
-      </div>
-    </div>
+                <div className="space-y-2">
+                  {paketPS4.map((item) => {
+                    const selected =
+                      form.paket?.tipe === item.tipe &&
+                      form.paket?.label === item.label &&
+                      form.paket?.durasi === item.durasi;
 
-  </div>
-</section>
-
+                    return (
+                      <label
+                        key={`${item.label}-${item.durasi}`}
+                        onClick={() => setForm({ ...form, paket: item })}
+                        className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer
+        ${
+          selected
+            ? "bg-orange-400 text-black border-orange-400"
+            : "bg-black/40 border-white/10"
+        }`}
+                      >
+                        {item.tipe} • {item.label} • {item.durasi} jam •{" "}
+                        {item.harga.toLocaleString("id-ID")}
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </section>
 
           {/* SUBMIT */}
           <div className="text-center pt-6">
             <motion.button
-              onClick={() => setShowModal(true)}
+              onClick={handleSubmit}
               className="px-10 py-3 rounded-xl font-bold text-black shadow-xl disabled:opacity-50"
               style={{ backgroundColor: "#FFA64D" }}
               whileHover={{ scale: 1.05 }}
-              disabled={!form.nama || !form.telepon || !form.jaminan || !form.paket}
             >
               Setuju & Bayar
             </motion.button>
+
+            {error && (
+              <p className="text-red-600 text-sm mt-3">
+                ⚠️ Harap lengkapi semua data sebelum melanjutkan pembayaran
+              </p>
+            )}
           </div>
         </div>
       </motion.section>
@@ -238,11 +289,26 @@ export default function OrderPage() {
               </h2>
 
               <div className="text-sm space-y-2 text-gray-300">
-                <p><b>Nama:</b> {form.nama}</p>
-                <p><b>Telepon:</b> {form.telepon}</p>
-                <p><b>Email:</b> {form.email || "-"}</p>
-                <p><b>Jaminan:</b> {form.jaminan}</p>
-                <p><b>Paket:</b> {form.paket}</p>
+                <p>
+                  <b>Nama:</b> {form.nama}
+                </p>
+                <p>
+                  <b>Telepon:</b> {form.telepon}
+                </p>
+                <p>
+                  <b>Email:</b> {form.email || "-"}
+                </p>
+                <p>
+                  <b>Jaminan:</b> {form.jaminan}
+                </p>
+                <p>
+                  <b>Paket:</b>{" "}
+                  {form.paket
+                    ? `${form.paket.tipe} • ${form.paket.label} • ${
+                        form.paket.durasi
+                      } jam • ${form.paket.harga.toLocaleString("id-ID")}`
+                    : "-"}
+                </p>
               </div>
 
               <div className="flex justify-end gap-3 mt-6">
