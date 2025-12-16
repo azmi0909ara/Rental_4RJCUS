@@ -1,38 +1,42 @@
 import { doc, runTransaction, serverTimestamp } from "firebase/firestore";
 import { db } from "@/lib/firebaseConfig";
+import { reduceStock, addStock } from "./inventory-service";
 
-export const updateOrderStatus = async (
-  orderId: string,
-  newStatus: "PENDING" | "WAITING_CONFIRMATION" | "PAID" | "CANCELLED",
-  tipe?: "PS3" | "PS4"
-) => {
+// Bayar order → kurangi stock
+export const payOrder = async (orderId: string, inventoryId: string) => {
   await runTransaction(db, async (tx) => {
     const orderRef = doc(db, "orders", orderId);
+    const orderSnap = await tx.get(orderRef);
+    if (!orderSnap.exists()) throw new Error("Order tidak ditemukan");
+    const orderData = orderSnap.data();
+    if (orderData.status === "PAID") throw new Error("Order sudah dibayar");
 
-    if (newStatus !== "PAID") {
-      tx.update(orderRef, {
-        status: newStatus,
-        updatedAt: serverTimestamp(),
-      });
-      return;
-    }
-
-    // const inventoryRef = doc(db, "inventory", tipe!);
-    // const inventorySnap = await tx.get(inventoryRef);
-
-    // if (!inventorySnap.exists()) throw new Error("Inventory not found");
-
-    // const available = inventorySnap.data().available;
-    // if (available <= 0) throw new Error("Stock habis");
-
-    // tx.update(inventoryRef, {
-    //   available: available - 1,
-    //   updatedAt: serverTimestamp(),
-    // });
+    // Kurangi stock
+    await reduceStock(inventoryId);
 
     tx.update(orderRef, {
       status: "PAID",
       paidAt: serverTimestamp(),
+    });
+  });
+};
+
+// Return order → tambah stock
+export const returnOrder = async (orderId: string, tipe: "PS3" | "PS4") => {
+  await runTransaction(db, async (tx) => {
+    const orderRef = doc(db, "orders", orderId);
+    const orderSnap = await tx.get(orderRef);
+    if (!orderSnap.exists()) throw new Error("Order tidak ditemukan");
+
+    const orderData = orderSnap.data();
+    if (orderData.status !== "PAID") throw new Error("Order belum dibayar");
+
+    // Tambah stock
+    await addStock(tipe);
+
+    tx.update(orderRef, {
+      status: "COMPLETED",
+      returnedAt: serverTimestamp(),
     });
   });
 };

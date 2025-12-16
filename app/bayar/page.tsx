@@ -3,7 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { useOrder } from "@/hooks/useOrder";
-import { updateOrderStatus } from "@/service/order-service";
+import { payOrder } from "@/service/order-service";
 
 export default function BayarPage() {
   const params = useSearchParams();
@@ -12,6 +12,13 @@ export default function BayarPage() {
 
   if (loading) return <p className="text-white">Loading...</p>;
 
+  const handleBayar = async () => {
+    try {
+      await payOrder(orderId, order.paket?.inventoryId);
+    } catch (err: any) {
+      alert(err.message);
+    }
+  };
   return (
     <main className="min-h-screen flex flex-col items-center justify-center bg-black text-white">
       <h1 className="text-xl font-bold mb-2">Pembayaran QRIS</h1>
@@ -24,7 +31,7 @@ export default function BayarPage() {
 
       {order.status === "PENDING" && (
         <button
-          onClick={() => updateOrderStatus(orderId, "WAITING_CONFIRMATION")}
+          onClick={handleBayar}
           className="mt-6 px-6 py-3 bg-orange-400 text-black rounded-xl"
         >
           Saya Sudah Bayar

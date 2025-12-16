@@ -5,21 +5,21 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "@/lib/firebaseConfig";
+import { useInventory } from "@/hooks/useInventory";
+import { FirestoreInventory, PaketItem } from "@/types/Inventory";
 
 export default function OrderPage() {
   const router = useRouter();
   const [error, setError] = useState(false);
+  const { inventory, loading } = useInventory();
+  console.log("Inventory: ", inventory);
+
   const [form, setForm] = useState<{
     nama: string;
     telepon: string;
     email: string;
     jaminan: string;
-    paket: {
-      tipe: "PS3" | "PS4";
-      label: string;
-      durasi: number;
-      harga: number;
-    } | null;
+    paket: PaketItem | null;
   }>({
     nama: "",
     telepon: "",
@@ -29,19 +29,38 @@ export default function OrderPage() {
   });
 
   const [showModal, setShowModal] = useState(false);
-  const paketPS3 = [
-    { tipe: "PS3", label: "PS + TV", durasi: 12, harga: 50000 },
-    { tipe: "PS3", label: "PS + TV", durasi: 24, harga: 80000 },
-    { tipe: "PS3", label: "PS AJA", durasi: 12, harga: 25000 },
-    { tipe: "PS3", label: "PS AJA", durasi: 24, harga: 50000 },
-  ] as const;
+  // const paketPS3 = [
+  //   { tipe: "PS3", label: "PS + TV", durasi: 12, harga: 50000 },
+  //   { tipe: "PS3", label: "PS + TV", durasi: 24, harga: 80000 },
+  //   { tipe: "PS3", label: "PS AJA", durasi: 12, harga: 25000 },
+  //   { tipe: "PS3", label: "PS AJA", durasi: 24, harga: 50000 },
+  // ] as const;
 
-  const paketPS4 = [
-    { tipe: "PS4", label: "PS + TV", durasi: 12, harga: 180000 },
-    { tipe: "PS4", label: "PS + TV", durasi: 24, harga: 120000 },
-    { tipe: "PS4", label: "PS AJA", durasi: 12, harga: 50000 },
-    { tipe: "PS4", label: "PS AJA", durasi: 24, harga: 80000 },
-  ] as const;
+  // const paketPS4 = [
+  //   { tipe: "PS4", label: "PS + TV", durasi: 12, harga: 180000 },
+  //   { tipe: "PS4", label: "PS + TV", durasi: 24, harga: 120000 },
+  //   { tipe: "PS4", label: "PS AJA", durasi: 12, harga: 50000 },
+  //   { tipe: "PS4", label: "PS AJA", durasi: 24, harga: 80000 },
+  // ] as const;
+
+  const paketList: PaketItem[] = inventory.flatMap((inv: FirestoreInventory) =>
+    Array.isArray(inv.items)
+      ? inv.items.map((item, index) => ({
+          id: `${inv.id}-${index}`,
+          inventoryId: inv.id,
+          tipe: inv.category,
+          label: item.item,
+          durasi: parseInt(item.duration),
+          harga: Number(item.price),
+        }))
+      : []
+  );
+
+  const paketPS3 = paketList.filter((item) => item.tipe === "PS3");
+  const paketPS4 = paketList.filter((item) => item.tipe === "PS4");
+
+  console.log("PS3:", paketPS3);
+  console.log("PS4:", paketPS4);
 
   const handleChange = (e: any) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -191,15 +210,12 @@ export default function OrderPage() {
                 </h3>
 
                 <div className="space-y-2">
-                  {paketPS3.map((item) => {
-                    const selected =
-                      form.paket?.tipe === item.tipe &&
-                      form.paket?.label === item.label &&
-                      form.paket?.durasi === item.durasi;
+                  {paketPS3.map((item: any) => {
+                    const selected = form.paket?.id === item.id;
 
                     return (
                       <label
-                        key={`${item.label}-${item.durasi}`}
+                        key={item.id}
                         onClick={() => setForm({ ...form, paket: item })}
                         className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer
         ${
@@ -223,15 +239,12 @@ export default function OrderPage() {
                 </h3>
 
                 <div className="space-y-2">
-                  {paketPS4.map((item) => {
-                    const selected =
-                      form.paket?.tipe === item.tipe &&
-                      form.paket?.label === item.label &&
-                      form.paket?.durasi === item.durasi;
+                  {paketPS4.map((item: any) => {
+                    const selected = form.paket?.id === item.id;
 
                     return (
                       <label
-                        key={`${item.label}-${item.durasi}`}
+                        key={item.id}
                         onClick={() => setForm({ ...form, paket: item })}
                         className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer
         ${

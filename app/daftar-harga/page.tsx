@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import Navbar from "../components/navbar";
+import { useInventory } from "@/hooks/useInventory";
 
 const priceData = [
   {
@@ -26,11 +27,13 @@ const priceData = [
 ];
 
 export default function DaftarHargaPage() {
+  const { inventory, loading } = useInventory();
+
+  if (loading) return <p>Loading...</p>;
   return (
     <>
       <Navbar />
       <main className="pt-24 relative min-h-screen px-6">
-
         {/* BACKGROUND */}
         <div
           className="absolute inset-0 bg-cover bg-center brightness-90 z-0"
@@ -39,12 +42,9 @@ export default function DaftarHargaPage() {
         <div className="absolute inset-0 bg-black/60 z-0"></div>
 
         <div className="relative z-10 max-w-5xl mx-auto">
-
           {/* Breadcrumb + Back Button */}
           <div className="flex items-center justify-between mb-6">
-            <p className="text-sm text-gray-300">
-              Beranda &gt; Daftar Harga
-            </p>
+            <p className="text-sm text-gray-300">Beranda &gt; Daftar Harga</p>
             <Link href="/">
               <button className="bg-orange-400 text-black px-3 py-1 rounded-lg text-sm hover:bg-orange-500 transition flex items-center gap-1">
                 ← Kembali
@@ -58,9 +58,14 @@ export default function DaftarHargaPage() {
           </h1>
 
           {/* Price Table */}
-          {priceData.map((section, index) => (
-            <div key={index} className="mb-10 bg-[#1a1a1a]/80 p-6 rounded-2xl shadow-lg border border-[#FFA64D]/30 backdrop-blur-sm">
-              <h2 className="text-2xl font-bold mb-4 text-[#FFD7A1]">{section.category}</h2>
+          {inventory.map((section, index) => (
+            <div
+              key={index}
+              className="mb-10 bg-[#1a1a1a]/80 p-6 rounded-2xl shadow-lg border border-[#FFA64D]/30 backdrop-blur-sm"
+            >
+              <h2 className="text-2xl font-bold mb-4 text-[#FFD7A1]">
+                {section.category}
+              </h2>
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-gray-200 border-collapse">
                   <thead>
@@ -71,8 +76,11 @@ export default function DaftarHargaPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {section.items.map((item, idx) => (
-                      <tr key={idx} className="border-b border-[#FFA64D]/20 hover:bg-[#FFA64D]/10 transition">
+                    {section.items.map((item: any, idx: any) => (
+                      <tr
+                        key={idx}
+                        className="border-b border-[#FFA64D]/20 hover:bg-[#FFA64D]/10 transition"
+                      >
                         <td className="py-2 px-4">{item.item}</td>
                         <td className="py-2 px-4">{item.duration}</td>
                         <td className="py-2 px-4">{item.price}</td>

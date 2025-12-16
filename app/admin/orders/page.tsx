@@ -1,10 +1,30 @@
 "use client";
 
 import { useOrders } from "@/hooks/useOrders";
-import { updateOrderStatus } from "@/service/order-service";
+import { payOrder, returnOrder } from "@/service/order-service";
 
 export default function OrdersPage() {
   const { orders, loading } = useOrders();
+
+  const handleStatusChange = async (
+    orderId: string,
+    status: string,
+    tipe: any
+  ) => {
+    try {
+      if (status === "PAID") {
+        await payOrder(orderId, tipe);
+        alert("Order berhasil dibayar, stock dikurangi!");
+      } else if (status === "COMPLETED") {
+        await returnOrder(orderId, tipe);
+        alert("Unit dikembalikan, stock bertambah!");
+      } else {
+        console.log("Status lain:", status);
+      }
+    } catch (err: any) {
+      alert(err.message);
+    }
+  };
 
   if (loading)
     return (
@@ -63,18 +83,19 @@ export default function OrdersPage() {
                 <div className="flex gap-6 items-center">
                   <select
                     value={order.status}
-                    onChange={(e: any) =>
-                      updateOrderStatus(
+                    onChange={(e) =>
+                      handleStatusChange(
                         order.id,
                         e.target.value,
-                        order.paket.tipe
+                        order.paket.inventoryId
                       )
                     }
-                    className="border-2 border-slate-200 px-4 py-2 rounded-lg font-medium text-sm text-slate-700 bg-white hover:border-blue-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all cursor-pointer min-w-[160px]"
+                    className="border-2 border-slate-200 px-4 py-2 rounded-lg text-black"
                   >
                     <option value="PENDING">🕒 PENDING</option>
                     <option value="WAITING_CONFIRMATION">⏳ WAITING</option>
                     <option value="PAID">✅ PAID</option>
+                    <option value="COMPLETED">✔ COMPLETED</option>
                     <option value="CANCELLED">❌ CANCELLED</option>
                   </select>
 
