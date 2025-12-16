@@ -86,7 +86,7 @@ export default function OrderPage() {
       {/* BACKGROUND */}
       <div
         className="absolute inset-0 bg-cover bg-center brightness-90"
-        style={{ backgroundImage: "url('/bkg1.jpg')" }}
+        style={{ backgroundImage: "url('/bkg2.jpeg')" }}
       />
       <div className="absolute inset-0 bg-black/70" />
 

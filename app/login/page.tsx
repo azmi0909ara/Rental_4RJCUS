@@ -48,7 +48,7 @@ export default function AdminLoginPage() {
     <div className="min-h-screen relative flex items-center justify-center p-4">
       <div
         className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: "url('/bkg1.jpg')" }}
+        style={{ backgroundImage: "url('/bkg2.jpeg')" }}
       ></div>
       <div className="absolute inset-0 bg-black/75 backdrop-blur-sm"></div>
 

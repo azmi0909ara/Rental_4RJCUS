@@ -32,7 +32,7 @@ export default function CategoryPage() {
         {/* BACKGROUND */}
         <div
           className="absolute inset-0 bg-cover bg-center brightness-90 z-0"
-          style={{ backgroundImage: "url('/bkg1.jpg')" }}
+          style={{ backgroundImage: "url('/bkg2.jpeg')" }}
         ></div>
         <div className="absolute inset-0 bg-black/60 z-0"></div>
 

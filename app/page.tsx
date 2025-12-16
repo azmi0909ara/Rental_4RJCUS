@@ -19,7 +19,7 @@ export default function Home() {
         {/* Background */}
         <div
           className="absolute inset-0 bg-cover bg-center brightness-90"
-          style={{ backgroundImage: "url('/bkg1.jpg')" }}
+          style={{ backgroundImage: "url('/bkg2.jpeg')" }}
         />
         <div className="absolute inset-0 bg-black/60" />
 
@@ -125,6 +125,46 @@ export default function Home() {
         </div>
       </motion.section>
 
+{/* ================= TENTANG KAMI ================= */}
+<motion.section
+  className="px-6 py-24 rounded-t-3xl -mt-12"
+  style={{ backgroundColor: "rgba(26, 26, 26, 0.92)" }}
+  initial="hidden"
+  whileInView="visible"
+  viewport={{ once: true, amount: 0.2 }}
+>
+  <motion.div
+    className="max-w-5xl mx-auto text-center space-y-6"
+    variants={fadeUp}
+  >
+    <h2
+      className="text-4xl font-extrabold"
+      style={{ color: "#FFD7A1" }}
+    >
+      Tentang Kami
+    </h2>
+
+    <p className="text-lg italic text-orange-300">
+      Karena Setiap Game Punya Cerita Sendiri
+    </p>
+
+    <p className="text-gray-300 leading-relaxed max-w-3xl mx-auto">
+      Kami adalah teman setia para gamers. <span className="text-[#FFA64D] font-semibold">4RJCUS</span> hadir dengan layanan
+      rental PS3 dan PS4 berkualitas tinggi untuk menemani setiap
+      momen bermainmu. Dari rental harian, mingguan, hingga paket
+      lengkap dengan game favoritmu, semua bisa kamu nikmati dengan
+      mudah.
+    </p>
+
+    <p className="text-gray-300 leading-relaxed max-w-3xl mx-auto">
+      Dengan pengalaman dan dedikasi terhadap kenyamanan pelanggan,
+      kami berkomitmen untuk menjadikan aktivitas gaming lebih seru,
+      praktis, dan tak terlupakan.
+    </p>
+  </motion.div>
+</motion.section>
+
+
       {/* ================= KEUNGGULAN ================= */}
       <motion.section
         className="px-6 py-20 rounded-t-3xl -mt-12"
@@ -134,8 +174,8 @@ export default function Home() {
         viewport={{ once: true, amount: 0.2 }}
       >
         <motion.h2
-          className="text-3xl font-bold text-center mb-10"
-          style={{ color: "#FFD7A1" }}
+          className="text-4xl font-bold text-center mb-10"
+          style={{ color: "#000000ff" }}
           variants={fadeUp}
         >
           Kenapa Memilih Kami?
