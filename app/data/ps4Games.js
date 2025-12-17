@@ -2,29 +2,29 @@
 
 const ps4Games = [
   {
-    title: "Spider-Man",
-    genre: "Action, Adventure",
-    cover: "/games/spiderman.jpg",
+    title: "Efootball",
+    genre: "Sports, Simulation",
+    cover: "/ps4/efb.jpeg",
   },
   {
-    title: "God of War",
-    genre: "Action, Adventure",
-    cover: "/games/godofwar4.jpg",
+    title: "FC 25",
+    genre: "Sports, Simulation",
+    cover: "/ps4/fc25.jpeg",
   },
   {
-    title: "Horizon Zero Dawn",
-    genre: "Action, RPG",
-    cover: "/games/horizon.jpg",
+    title: "F1 2024",
+    genre: "Racing, Simulation",
+    cover: "/ps4/fi24.jpeg",
   },
   {
-    title: "FIFA 23",
-    genre: "Sports",
-    cover: "/games/fifa23.jpg",
+    title: "UFC 4",
+    genre: "Fighting, Sports",
+    cover: "/ps4/ufc4.jpeg",
   },
   {
-    title: "Gran Turismo 7",
-    genre: "Racing",
-    cover: "/games/granturismo7.jpg",
+    title: "It Takes Two",
+    genre: "Adventure, Puzzle",
+    cover: "/ps4/it2.jpeg",
   },
 ];
 

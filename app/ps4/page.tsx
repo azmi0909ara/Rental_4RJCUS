@@ -37,32 +37,46 @@ export default function PS4Page() {
           </h1>
 
           {/* Cards */}
-          <div className="grid md:grid-cols-3 gap-8">
-            {ps4Games.map((game, index) => (
-              <div
-                key={index}
-                className="bg-[#1a1a1a]/80 p-4 rounded-2xl shadow-lg border border-[#FFA64D]/30 
-                           hover:scale-105 hover:shadow-2xl transition-all duration-300 backdrop-blur-sm flex flex-col items-center relative"
-              >
-                {/* Cover */}
-                <Image
-                  src={game.cover}
-                  alt={game.title}
-                  width={120}
-                  height={120}
-                  className="rounded-lg mb-4"
-                />
+<div className="grid md:grid-cols-3 gap-8">
+  {ps4Games.map((game, index) => (
+    <div
+      key={index}
+      className="
+        bg-[#1a1a1a]/80 
+        p-4 
+        rounded-2xl 
+        shadow-lg 
+        border border-[#FFA64D]/30
+        hover:scale-105 hover:shadow-2xl transition-all duration-300
+        backdrop-blur-sm
+        flex flex-col items-center
+        h-[360px]
+      "
+    >
+      {/* Cover Wrapper */}
+      <div className="w-[250px] h-[220px] relative mb-4">
+        <Image
+          src={game.cover}
+          alt={game.title}
+          fill
+          className="rounded-lg object-cover"
+        />
+      </div>
 
-                {/* Title */}
-                <h3 className="text-xl font-bold mb-1 text-[#FFD7A1]">{game.title}</h3>
+      {/* Text Wrapper */}
+      <div className="text-center flex flex-col justify-between flex-1">
+        <h3 className="text-lg font-bold text-[#FFD7A1] leading-tight">
+          {game.title}
+        </h3>
 
-                {/* Genre */}
-                <p className="text-gray-300 text-center text-sm mb-4">{game.genre}</p>
-
-              </div>
-            ))}
-          </div>
-        </div>
+        <p className="text-gray-300 text-sm mt-2">
+          {game.genre}
+        </p>
+      </div>
+    </div>
+  ))}
+</div>
+</div>
       </main>
     </>
   );

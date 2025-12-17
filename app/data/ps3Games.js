@@ -2,29 +2,24 @@
 
 const ps3Games = [
   {
-    title: "God of War III",
-    genre: "Action, Adventure",
-    cover: "/games/godofwar3.jpg",
+    title: "Naruto Shippuden: Ultimate Ninja Storm 3",
+    genre: "Action, Adventure, anime",
+    cover: "/ps3/naruto.jpeg",
   },
   {
-    title: "Uncharted 2: Among Thieves",
-    genre: "Action, Adventure",
-    cover: "/games/uncharted2.jpg",
+    title: "GTA V",
+    genre: "role-Playing, Action",
+    cover: "/ps3/gta5.jpeg",
   },
   {
-    title: "Gran Turismo 6",
-    genre: "Racing",
-    cover: "/games/granturismo6.jpg",
+    title: "GTA San Andreas",
+    genre: "Role-Playing, Action",
+    cover: "/ps3/gtasa.jpeg",
   },
   {
-    title: "The Last of Us",
-    genre: "Action, Adventure",
-    cover: "/games/thelastofus.jpg",
-  },
-  {
-    title: "LittleBigPlanet",
-    genre: "Puzzle, Platformer",
-    cover: "/games/littlebigplanet.jpg",
+    title: "Pes 2018",
+    genre: "Sports, Simulation",
+    cover: "/ps3/pes18.jpeg",
   },
 ];
 
