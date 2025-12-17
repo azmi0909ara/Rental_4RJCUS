@@ -1,52 +1,149 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
 import { useOrder } from "@/hooks/useOrder";
 import { payOrder } from "@/service/order-service";
 
 export default function BayarPage() {
   const params = useSearchParams();
+  const router = useRouter();
   const orderId = params.get("orderId")!;
   const { order, loading }: any = useOrder(orderId);
 
-  if (loading) return <p className="text-white">Loading...</p>;
+  const [isPaying, setIsPaying] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
+
+  useEffect(() => {
+    if (showPopup) {
+      const timer = setTimeout(() => {
+        setShowPopup(false);
+      }, 2000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [showPopup]);
+
+  if (loading)
+    return (
+      <main className="min-h-screen flex items-center justify-center bg-black text-white">
+        Loading...
+      </main>
+    );
 
   const handleBayar = async () => {
     try {
+      setIsPaying(true);
       await payOrder(orderId, order.paket?.inventoryId);
+      setShowPopup(true);
     } catch (err: any) {
       alert(err.message);
+    } finally {
+      setIsPaying(false);
     }
   };
+
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center bg-black text-white">
-      <h1 className="text-xl font-bold mb-2">Pembayaran QRIS</h1>
+    <main className="relative min-h-screen flex flex-col items-center justify-center text-white px-6">
+      {/* BACKGROUND */}
+      <div
+        className="absolute inset-0 bg-cover bg-center brightness-90"
+        style={{ backgroundImage: "url('/bkg2.jpeg')" }}
+      />
+      <div className="absolute inset-0 bg-black/70" />
 
-      <p className="mb-4">
-        Total: Rp {order?.totalBayar?.toLocaleString("id-ID")}
-      </p>
+      {/* CONTENT */}
+      <div className="relative z-10 flex flex-col items-center text-center max-w-md w-full">
+        <h1 className="text-2xl font-extrabold mb-4 text-[#FFD7A1]">
+          Pembayaran QRIS
+        </h1>
 
-      <Image src="/qrisPs.jpg" alt="QR" width={260} height={260} />
+        <p className="text-gray-300">Total Pembayaran</p>
+        <p className="text-3xl font-bold mb-4 text-orange-400">
+          Rp {order?.totalBayar?.toLocaleString("id-ID")}
+        </p>
 
-      {order.status === "PENDING" && (
-        <button
-          onClick={handleBayar}
-          className="mt-6 px-6 py-3 bg-orange-400 text-black rounded-xl"
-        >
-          Saya Sudah Bayar
-        </button>
-      )}
-
-      {order.status === "PAID" && (
-        <div className="mt-6 text-center border border-green-500 p-4 rounded-xl">
-          <div className="text-3xl mb-2">⚠️</div>
-          <p className="font-bold">PEMBAYARAN BERHASIL</p>
-          <p className="text-sm text-gray-400 mt-1">
-            Silakan ambil unit dan nota di tempat
-          </p>
+        {/* CATATAN */}
+        <div className="text-sm text-gray-300 bg-black/40 border border-white/10 rounded-xl p-4 mb-5 text-left">
+          <ul className="space-y-1 list-disc list-inside">
+            <li>Bayar sesuai dengan jumlah yang tertera</li>
+            <li>Simpan bukti pembayaran atau transfer</li>
+            <li>Tunjukan bukti pembayaran saat pengambilan barang</li>
+          </ul>
         </div>
-      )}
+
+        {/* QR */}
+        <Image
+          src="/qrisPs.jpg"
+          alt="QRIS"
+          width={260}
+          height={260}
+          className="rounded-xl mb-6"
+        />
+
+        {/* ACTION */}
+        {order.status === "PENDING" && (
+          <button
+            onClick={handleBayar}
+            disabled={isPaying}
+            className="px-8 py-3 bg-orange-400 text-black rounded-xl font-bold hover:bg-orange-500 transition disabled:opacity-60"
+          >
+            {isPaying ? "Memproses..." : "Saya Sudah Bayar"}
+          </button>
+        )}
+
+        {order.status === "PAID" && (
+          <div className="mt-6 text-center space-y-4">
+            <div>
+              <div className="text-3xl mb-2">✅</div>
+              <p className="font-bold text-green-400">
+                PEMBAYARAN BERHASIL
+              </p>
+              <p className="text-sm text-gray-400 mt-1">
+                Silakan ambil unit dan nota di tempat
+              </p>
+            </div>
+
+            <button
+              onClick={() => router.push("/")}
+              className="px-6 py-2 bg-orange-400 text-black rounded-lg font-semibold hover:bg-orange-500 transition"
+            >
+              Kembali ke Halaman Utama
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* POPUP */}
+      <AnimatePresence>
+        {showPopup && (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <div className="absolute inset-0 bg-black/70" />
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="relative bg-[#141414] border border-orange-400/40 rounded-2xl p-8 text-center shadow-2xl w-[90%] max-w-sm"
+            >
+              <div className="text-4xl mb-3">✅</div>
+              <h2 className="text-lg font-bold text-[#FFD7A1] mb-2">
+                Pembayaran Berhasil
+              </h2>
+              <p className="text-gray-300 text-sm">
+                Pesanan anda sedang diproses
+              </p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </main>
   );
 }
