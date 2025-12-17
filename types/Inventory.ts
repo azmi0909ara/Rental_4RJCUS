@@ -1,30 +1,9 @@
-export type FirestoreItem = {
-  item: string;
-  duration: string;
-  price: string;
-};
-
-export type FirestoreInventory = {
-  id: string;
-  category: "PS3" | "PS4" | "PS5";
-  available: number;
-  items: FirestoreItem[];
-};
-
-export type PaketItem = {
-  id: string;
-  inventoryId: string;
-  tipe: "PS3" | "PS4" | "PS5";
-  label: string;
-  durasi: number;
-  harga: number;
-};
-
 export type InventoryItem = {
   id: string;
   item: string;
   duration: string;
   price: string;
+  devices: PackageDevice[];
 };
 
 export type EditableInventoryItem = InventoryItem & {
@@ -34,7 +13,6 @@ export type EditableInventoryItem = InventoryItem & {
 export interface InventorySection {
   id: string;
   category: string;
-  available: number;
   items: InventoryItem[];
 }
 
@@ -43,3 +21,32 @@ export interface NewItemForm {
   duration: string;
   price: string;
 }
+
+export type Device = {
+  id: string;
+  name: string;
+  stock: number;
+};
+
+export type PackageDevice = {
+  deviceId: string;
+  name: string;
+  qty: number;
+};
+
+export type InventoryPackage = {
+  id: string;
+  name: string;
+  duration: string;
+  price: string;
+  devices: PackageDevice[];
+};
+
+export type PaketItem = {
+  id: string;
+  inventoryId: string;
+  label: string;
+  durasi: number;
+  harga: number;
+  devices: PackageDevice[];
+};

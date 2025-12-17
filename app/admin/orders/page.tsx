@@ -5,18 +5,21 @@ import { payOrder, returnOrder } from "@/service/order-service";
 
 export default function OrdersPage() {
   const { orders, loading } = useOrders();
+  console.log("order: ", orders);
 
-  const handleStatusChange = async (
-    orderId: string,
-    status: string,
-    tipe: any
-  ) => {
+  const ordersWithDevices = orders.map((order) => ({
+    deviceNames: (order.devicesUsed ?? [])
+      .map((device: any) => device.name ?? device.deviceId)
+      .filter(Boolean),
+  }));
+
+  const handleStatusChange = async (orderId: string, status: string) => {
     try {
       if (status === "PAID") {
-        await payOrder(orderId, tipe);
+        await payOrder(orderId);
         alert("Order berhasil dibayar, stock dikurangi!");
       } else if (status === "COMPLETED") {
-        await returnOrder(orderId, tipe);
+        await returnOrder(orderId);
         alert("Unit dikembalikan, stock bertambah!");
       } else {
         console.log("Status lain:", status);
@@ -60,7 +63,7 @@ export default function OrdersPage() {
                     {order.nama}
                   </p>
                   <div className="flex items-center gap-2 text-sm text-slate-500">
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 text-blue-700 rounded-full font-medium">
+                    {/* <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 text-blue-700 rounded-full font-medium">
                       <svg
                         className="w-3.5 h-3.5"
                         fill="currentColor"
@@ -73,10 +76,22 @@ export default function OrdersPage() {
                           clipRule="evenodd"
                         />
                       </svg>
-                      {order.paket.tipe}
+                      {ordersWithDevices.map((order) => (
+                        <div>
+                          <p className="text-sm text-gray-600">
+                            {order.deviceNames.length > 0
+                              ? order.deviceNames.join(", ")
+                              : "-"}
+                          </p>
+                        </div>
+                      ))}
+                    </span> */}
+                    <span className="text-slate-400">•</span>
+                    <span className="text-slate-600">
+                      {order.paket.label} • {order.paket.durasi} jam
                     </span>
                     <span className="text-slate-400">•</span>
-                    <span className="text-slate-600">{order.paket.label}</span>
+                    <span className="text-slate-600">{order.jaminan}</span>
                   </div>
                 </div>
 
@@ -84,11 +99,7 @@ export default function OrdersPage() {
                   <select
                     value={order.status}
                     onChange={(e) =>
-                      handleStatusChange(
-                        order.id,
-                        e.target.value,
-                        order.paket.inventoryId
-                      )
+                      handleStatusChange(order.id, e.target.value)
                     }
                     className="border-2 border-slate-200 px-4 py-2 rounded-lg text-black"
                   >

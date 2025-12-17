@@ -47,10 +47,10 @@ const Sidebar = () => {
       icon: Package,
     },
     {
-      id: "finance",
-      label: "Keuangan",
-      href: "/admin/finance",
-      icon: DollarSign,
+      id: "devices",
+      label: "Devices",
+      href: "/admin/devices",
+      icon: Gamepad2,
     },
   ];
 

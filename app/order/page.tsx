@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "@/lib/firebaseConfig";
 import { useInventory } from "@/hooks/useInventory";
-import { FirestoreInventory, PaketItem } from "@/types/Inventory";
+import type { PaketItem, InventorySection } from "@/types/Inventory";
 
 export default function OrderPage() {
   const router = useRouter();
@@ -43,24 +43,25 @@ export default function OrderPage() {
   //   { tipe: "PS4", label: "PS AJA", durasi: 24, harga: 80000 },
   // ] as const;
 
-  const paketList: PaketItem[] = inventory.flatMap((inv: FirestoreInventory) =>
-    Array.isArray(inv.items)
-      ? inv.items.map((item, index) => ({
-          id: `${inv.id}-${index}`,
-          inventoryId: inv.id,
-          tipe: inv.category,
-          label: item.item,
-          durasi: parseInt(item.duration),
-          harga: Number(item.price),
-        }))
-      : []
+  const paketList: PaketItem[] = inventory.map((item: any) => ({
+    id: item.id,
+    inventoryId: item.id,
+    label: item.item,
+    durasi: Number(item.duration),
+    harga: Number(item.price),
+    devices: item.devices ?? [],
+  }));
+
+  const paketPS3 = paketList.filter((p) =>
+    p.devices.some((d) => d.name === "PS3")
   );
 
-  const paketPS3 = paketList.filter((item) => item.tipe === "PS3");
-  const paketPS4 = paketList.filter((item) => item.tipe === "PS4");
+  const paketPS4 = paketList.filter((p) =>
+    p.devices.some((d) => d.name === "PS4")
+  );
 
-  console.log("PS3:", paketPS3);
-  console.log("PS4:", paketPS4);
+  console.log("ps3: ", paketPS3);
+  console.log("ps4: ", paketPS4);
 
   const handleChange = (e: any) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -83,7 +84,14 @@ export default function OrderPage() {
         telepon: form.telepon,
         email: form.email,
         jaminan: form.jaminan,
-        paket: form.paket,
+
+        paket: {
+          label: form.paket.label,
+          durasi: form.paket.durasi,
+          harga: form.paket.harga,
+        },
+
+        devicesUsed: form.paket.devices,
         totalBayar: form.paket.harga,
         orderCode: `ORD-${Date.now()}`,
         status: "PENDING",
@@ -317,7 +325,7 @@ export default function OrderPage() {
                 <p>
                   <b>Paket:</b>{" "}
                   {form.paket
-                    ? `${form.paket.tipe} • ${form.paket.label} • ${
+                    ? `$ ${form.paket.label} • ${
                         form.paket.durasi
                       } jam • ${form.paket.harga.toLocaleString("id-ID")}`
                     : "-"}
