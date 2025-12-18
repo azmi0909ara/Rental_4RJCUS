@@ -68,9 +68,6 @@ export default function OrderPage() {
     p.devices.some((d) => d.name === "PS4")
   );
 
-  console.log("ps3: ", paketPS3);
-  console.log("ps4: ", paketPS4);
-
   const handleChange = (e: any) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };

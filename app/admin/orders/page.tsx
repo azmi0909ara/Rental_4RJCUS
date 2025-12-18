@@ -6,7 +6,6 @@ import { payOrder, returnOrder } from "@/service/order-service";
 export default function OrdersPage() {
   const { orders, loading } = useOrders();
 
-  // 👉 hanya tampilkan order yang BELUM completed
   const activeOrders = orders.filter(
     (order: any) => order.status !== "COMPLETED"
   );
@@ -21,8 +20,6 @@ export default function OrdersPage() {
       if (status === "COMPLETED") {
         await returnOrder(orderId);
         alert("Pesanan selesai & masuk ke history");
-        // tidak perlu setState manual
-        // useOrders() akan auto re-fetch
       }
     } catch (err: any) {
       alert(err.message);

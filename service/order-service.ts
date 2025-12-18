@@ -18,14 +18,12 @@ export const payOrder = async (orderId: string) => {
 
     const devices = order.devicesUsed ?? [];
 
-    // 1️⃣ READ SEMUA DEVICE
     const deviceRefs = devices.map((d: any) => doc(db, "devices", d.deviceId));
 
     const deviceSnaps = await Promise.all(
       deviceRefs.map((ref: any) => tx.get(ref))
     );
 
-    // 2️⃣ VALIDASI
     deviceSnaps.forEach((snap, i) => {
       if (!snap.exists()) throw new Error("Device tidak ditemukan");
 
@@ -35,14 +33,12 @@ export const payOrder = async (orderId: string) => {
       }
     });
 
-    // 3️⃣ WRITE
     deviceSnaps.forEach((snap, i) => {
       tx.update(deviceRefs[i], {
         stock: snap.data().stock - devices[i].qty,
       });
     });
 
-    // 4️⃣ UPDATE ORDER
     tx.update(orderRef, {
       status: "PAID",
       paidAt: serverTimestamp(),
@@ -82,6 +78,27 @@ export const returnOrder = async (orderId: string) => {
     tx.update(orderRef, {
       status: "COMPLETED",
       returnedAt: serverTimestamp(),
+    });
+  });
+};
+
+export const confirmPaymentByUser = async (orderId: string) => {
+  const orderRef = doc(db, "orders", orderId);
+
+  await runTransaction(db, async (tx) => {
+    const snap = await tx.get(orderRef);
+    if (!snap.exists()) throw new Error("Order tidak ditemukan");
+
+    const order = snap.data();
+
+    if (order.status !== "PENDING")
+      throw new Error("Order tidak bisa dikonfirmasi");
+
+    if (order.userConfirmedAt) throw new Error("Pembayaran sudah dikonfirmasi");
+
+    tx.update(orderRef, {
+      status: "PENDING",
+      userConfirmedAt: serverTimestamp(),
     });
   });
 };

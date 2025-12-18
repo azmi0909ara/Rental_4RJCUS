@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { useOrder } from "@/hooks/useOrder";
-import { payOrder } from "@/service/order-service";
+import { confirmPaymentByUser, payOrder } from "@/service/order-service";
 
 export default function BayarPage() {
   const params = useSearchParams();
@@ -37,7 +37,7 @@ export default function BayarPage() {
   const handleBayar = async () => {
     try {
       setIsPaying(true);
-      await payOrder(orderId); // ✅ FIX DI SINI
+      await confirmPaymentByUser(orderId);
       setShowPopup(true);
     } catch (err: any) {
       alert(err.message);
@@ -45,7 +45,7 @@ export default function BayarPage() {
       setIsPaying(false);
     }
   };
-
+  const userHasConfirmed = !!order.userConfirmedAt;
   return (
     <main className="relative min-h-screen flex flex-col items-center justify-center text-white px-6">
       {/* BACKGROUND */}
@@ -85,7 +85,8 @@ export default function BayarPage() {
         />
 
         {/* ACTION */}
-        {order.status === "PENDING" && (
+        {/* USER BELUM KONFIRMASI */}
+        {order.status === "PENDING" && !userHasConfirmed && (
           <button
             onClick={handleBayar}
             disabled={isPaying}
@@ -95,13 +96,24 @@ export default function BayarPage() {
           </button>
         )}
 
+        {/* USER SUDAH KONFIRMASI */}
+        {order.status === "PENDING" && userHasConfirmed && (
+          <div className="mt-6 text-center space-y-2">
+            <div className="text-3xl">⏳</div>
+            <p className="font-bold text-yellow-400">
+              Menunggu Konfirmasi Admin
+            </p>
+            <p className="text-sm text-gray-400">
+              Silakan tunjukkan bukti pembayaran saat pengambilan PS
+            </p>
+          </div>
+        )}
+
         {order.status === "PAID" && (
           <div className="mt-6 text-center space-y-4">
             <div>
               <div className="text-3xl mb-2">✅</div>
-              <p className="font-bold text-green-400">
-                PEMBAYARAN BERHASIL
-              </p>
+              <p className="font-bold text-green-400">PEMBAYARAN BERHASIL</p>
               <p className="text-sm text-gray-400 mt-1">
                 Silakan ambil unit dan nota di tempat
               </p>

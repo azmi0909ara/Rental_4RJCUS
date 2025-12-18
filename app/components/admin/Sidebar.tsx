@@ -76,11 +76,8 @@ const Sidebar = () => {
       <div className="p-6 border-b border-gray-800 flex items-center justify-between">
         {sidebarOpen && (
           <div className="flex items-center gap-3">
-            <div
-              className="w-10 h-10 rounded-lg flex items-center justify-center"
-              style={{ backgroundColor: "#FFA64D" }}
-            >
-              <Gamepad2 className="w-6 h-6 text-black" />
+            <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+              <img src="/logo.png" alt="" />
             </div>
             <div>
               <h1 className="font-bold text-lg" style={{ color: "#FFD7A1" }}>
