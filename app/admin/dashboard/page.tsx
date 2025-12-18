@@ -1,130 +1,69 @@
 "use client";
 
-type OrderStatus = "PENDING" | "WAITING_CONFIRMATION" | "PAID" | "CANCELLED";
-
-import { useEffect, useState } from "react";
 import {
   LayoutDashboard,
   Package,
   ShoppingCart,
-  Users,
   DollarSign,
-  Calendar,
-  Settings,
-  LogOut,
-  Menu,
-  X,
   Gamepad2,
   TrendingUp,
   AlertCircle,
-  CheckCircle,
-  Clock,
-  BarChart3,
+  TvMinimal,
 } from "lucide-react";
-import { signOut } from "firebase/auth";
-import { auth } from "@/lib/firebaseConfig";
-import { useRouter } from "next/navigation";
-import {
-  collection,
-  onSnapshot,
-  query,
-  orderBy,
-  updateDoc,
-  doc,
-} from "firebase/firestore";
-import { db } from "@/lib/firebaseConfig";
-import Link from "next/link";
+import { useOrders } from "@/hooks/useOrders";
+import { getInitials, stringToColor } from "@/utils/avatar";
+import { getExpectedReturnTime, getReturnStatus } from "@/utils/ordetTime";
+import { useDevices } from "@/hooks/useDevices";
+import { getDashboardAlerts } from "@/utils/dashboardAlerts";
 
 export default function AdminDashboard() {
-  const [activeMenu, setActiveMenu] = useState("dashboard");
-  const [orders, setOrders] = useState<any[]>([]);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const router = useRouter();
+  const { orders } = useOrders();
+  console.log("order: ", orders);
 
-  useEffect(() => {
-    const q = query(collection(db, "orders"), orderBy("createdAt", "desc"));
+  const { devices, loading } = useDevices();
+  const alerts = getDashboardAlerts(orders, devices);
 
-    const unsub = onSnapshot(q, (snap) => {
-      const data = snap.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setOrders(data);
-    });
+  const totalRevenue = orders
+    .filter((o) => o.status === "COMPLETED")
+    .reduce((s, o) => s + (o.totalBayar || 0), 0);
 
-    return () => unsub();
-  }, []);
+  const activeOrders = orders.filter((o) => o.status === "PAID").length;
 
-  const handleLogout = async () => {
-    await signOut(auth);
-    document.cookie = "__session=; path=/; max-age=0;";
-    router.push("/login");
-  };
+  const psDevices = devices.filter((d) => d.name.toLowerCase().includes("ps"));
+  const tvDevices = devices.filter((d) => d.name.toLowerCase().includes("tv"));
+
+  const totalPSStock = psDevices.reduce((sum, d) => sum + d.stock, 0);
+  const totalTVStock = tvDevices.reduce((sum, d) => sum + d.stock, 0);
 
   // Sample Data
   const stats = [
     {
       label: "Revenue Hari Ini",
-      value: "Rp 450.000",
+      value: `Rp ${totalRevenue.toLocaleString("id-ID")}`,
       icon: DollarSign,
       color: "#10B981",
-      trend: "+12%",
+      trend: `${orders.length} order`,
     },
     {
       label: "Pesanan Aktif",
-      value: "8",
+      value: activeOrders.toString(),
       icon: ShoppingCart,
       color: "#3B82F6",
-      trend: "+3",
+      trend: "Realtime",
     },
     {
       label: "PS Tersedia",
-      value: "12/20",
+      value: `${totalPSStock}`,
       icon: Gamepad2,
       color: "#8B5CF6",
-      trend: "60%",
+      trend: `Realtime`,
     },
     {
-      label: "Total Customer",
-      value: "156",
-      icon: Users,
-      color: "#F59E0B",
-      trend: "+24",
-    },
-  ];
-
-  const recentOrders = [
-    {
-      id: "ORD-001",
-      customer: "Budi Santoso",
-      item: "PS4 + TV",
-      duration: "3 hari",
-      status: "active",
-      date: "12 Des 2024",
-    },
-    {
-      id: "ORD-002",
-      customer: "Siti Rahma",
-      item: "PS3",
-      duration: "2 hari",
-      status: "pending",
-      date: "12 Des 2024",
-    },
-    {
-      id: "ORD-003",
-      customer: "Ahmad Fauzi",
-      item: "PS4",
-      duration: "5 hari",
-      status: "active",
-      date: "11 Des 2024",
-    },
-    {
-      id: "ORD-004",
-      customer: "Dewi Lestari",
-      item: "PS3 + TV",
-      duration: "1 hari",
-      status: "completed",
-      date: "10 Des 2024",
+      label: "TV Tersedia",
+      value: `${totalTVStock}`,
+      icon: TvMinimal,
+      color: "#8B5CF6",
+      trend: `Realtime`,
     },
   ];
 
@@ -166,12 +105,6 @@ export default function AdminDashboard() {
       default:
         return "bg-gray-100 text-gray-800 border-gray-300";
     }
-  };
-
-  const getStatusIcon = (status: string) => {
-    if (status === "active") return <CheckCircle className="w-4 h-4" />;
-    if (status === "pending") return <Clock className="w-4 h-4" />;
-    return <CheckCircle className="w-4 h-4" />;
   };
 
   return (
@@ -224,108 +157,137 @@ export default function AdminDashboard() {
 
               <div className="p-6">
                 <div className="space-y-4">
-                  {recentOrders.map((order) => (
-                    <div
-                      key={order.id}
-                      className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-                    >
-                      <div className="flex items-center gap-4 flex-1">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-bold text-sm">
-                          {order.customer.charAt(0)}
-                        </div>
+                  {orders.slice(0, 5).map((order) => {
+                    const initials = getInitials(order.nama);
+                    const bgColor = stringToColor(order.nama);
+                    const expectedReturn = getExpectedReturnTime(
+                      order.paidAt,
+                      order.paket?.durasi
+                    );
 
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <p className="font-semibold text-gray-900">
-                              {order.customer}
-                            </p>
-                            <span
-                              className={`px-2 py-0.5 rounded-full text-xs font-medium border flex items-center gap-1 ${getStatusBadge(
-                                order.status
-                              )}`}
-                            >
-                              {getStatusIcon(order.status)}
-                              {order.status}
-                            </span>
-                          </div>
-                          <p className="text-sm text-gray-600">
-                            {order.item} • {order.duration}
-                          </p>
-                          <p className="text-xs text-gray-500 mt-1">
-                            {order.date}
-                          </p>
-                        </div>
-                      </div>
+                    const returnStatus = getReturnStatus(
+                      order.status,
+                      expectedReturn,
+                      order.returnedAt
+                    );
 
-                      <button
-                        className="px-4 py-2 text-sm font-medium rounded-lg transition-colors"
-                        style={{
-                          color: "#FFA64D",
-                          border: "1px solid #FFA64D",
-                        }}
+                    return (
+                      <div
+                        key={order.id}
+                        className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
                       >
-                        Detail
-                      </button>
-                    </div>
-                  ))}
+                        {/* LEFT */}
+                        <div className="flex items-center gap-4">
+                          {/* Avatar */}
+                          <div
+                            className="w-10 h-10 rounded-full text-white flex items-center justify-center font-bold text-sm"
+                            style={{ backgroundColor: bgColor }}
+                          >
+                            {initials}
+                          </div>
+
+                          {/* Info */}
+                          <div>
+                            <p className="font-semibold text-gray-900">
+                              {order.nama}
+                            </p>
+
+                            <p className="text-sm text-gray-600">
+                              {Array.isArray(order.devicesUsed)
+                                ? order.devicesUsed
+                                    .map((d: any) => `${d.name} (${d.qty})`)
+                                    .join(", ")
+                                : "-"}
+                              {" • "}
+                              {order.paket?.durasi} jam
+                            </p>
+
+                            {returnStatus && (
+                              <p
+                                className={`text-xs mt-1 font-medium ${returnStatus.color}`}
+                              >
+                                {returnStatus.label}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* RIGHT */}
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs border font-medium ${getStatusBadge(
+                            order.status
+                          )}`}
+                        >
+                          {order.status}
+                        </span>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             </div>
 
             {/* Sidebar - 1/3 width */}
             <div className="space-y-6">
-              {/* Quick Actions */}
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <h3 className="text-lg font-bold text-gray-900 mb-4">
-                  Quick Actions
-                </h3>
-                <div className="space-y-3">
-                  <button
-                    className="w-full py-3 rounded-lg font-semibold text-white transition-all hover:shadow-lg"
-                    style={{ backgroundColor: "#FFA64D" }}
-                  >
-                    + Pesanan Baru
-                  </button>
-                  <button
-                    className="w-full py-3 rounded-lg font-semibold transition-all border-2"
-                    style={{ color: "#FFA64D", borderColor: "#FFA64D" }}
-                  >
-                    Lihat Kalender
-                  </button>
-                  <button className="w-full py-3 rounded-lg font-semibold transition-all border-2 border-gray-300 text-gray-700 hover:bg-gray-50">
-                    Laporan Harian
-                  </button>
-                </div>
-              </div>
-
               {/* Alerts */}
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                 <h3 className="text-lg font-bold text-gray-900 mb-4">
                   Peringatan
                 </h3>
+
                 <div className="space-y-3">
-                  <div className="flex items-start gap-3 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
-                    <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
-                    <div>
-                      <p className="text-sm font-medium text-yellow-900">
-                        3 PS harus kembali hari ini
-                      </p>
-                      <p className="text-xs text-yellow-700 mt-1">
-                        Hubungi pelanggan untuk konfirmasi
-                      </p>
+                  {alerts.dueTodayCount > 0 && (
+                    <div className="flex gap-3 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                      <AlertCircle className="w-5 h-5 text-yellow-600 mt-0.5" />
+                      <div>
+                        <p className="text-sm font-medium text-yellow-900">
+                          ⚠️ {alerts.dueTodayCount} order harus kembali hari ini
+                        </p>
+                        <p className="text-xs text-yellow-700">
+                          Hubungi pelanggan untuk konfirmasi
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
-                    <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                    <div>
-                      <p className="text-sm font-medium text-blue-900">
-                        2 PS butuh maintenance
-                      </p>
-                      <p className="text-xs text-blue-700 mt-1">
-                        Cek kondisi sebelum disewakan
-                      </p>
+                  )}
+
+                  {alerts.overdueCount > 0 && (
+                    <div className="flex gap-3 p-3 bg-red-50 rounded-lg border border-red-200">
+                      <AlertCircle className="w-5 h-5 text-red-600 mt-0.5" />
+                      <div>
+                        <p className="text-sm font-medium text-red-900">
+                          🚨 {alerts.overdueCount} order terlambat dikembalikan
+                        </p>
+                        <p className="text-xs text-red-700">
+                          Segera follow up pelanggan
+                        </p>
+                      </div>
                     </div>
-                  </div>
+                  )}
+
+                  {alerts.lowStockDevices.map((d) => (
+                    <div
+                      key={d.id}
+                      className="flex gap-3 p-3 bg-yellow-50 rounded-lg border border-yellow-200"
+                    >
+                      <AlertCircle className="w-5 h-5 text-yellow-600 mt-0.5" />
+                      <div>
+                        <p className="text-sm font-medium text-yellow-900">
+                          ⚠️ {d.name} stok tinggal {d.stock} unit
+                        </p>
+                        <p className="text-xs text-yellow-700">
+                          Tambah stok atau batasi pesanan
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+
+                  {alerts.dueTodayCount === 0 &&
+                    alerts.overdueCount === 0 &&
+                    alerts.lowStockDevices.length === 0 && (
+                      <p className="text-sm text-gray-500 text-center">
+                        Tidak ada peringatan hari ini ✅
+                      </p>
+                    )}
                 </div>
               </div>
             </div>
