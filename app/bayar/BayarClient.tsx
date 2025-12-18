@@ -8,9 +8,19 @@ import { useOrder } from "@/hooks/useOrder";
 import { confirmPaymentByUser, payOrder } from "@/service/order-service";
 
 export default function BayarPage() {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
+  // ⬇️ BARU DI SINI
   const params = useSearchParams();
-  const router = useRouter();
   const orderId = params.get("orderId");
+
+  const router = useRouter();
 
   if (!orderId) {
     return (
