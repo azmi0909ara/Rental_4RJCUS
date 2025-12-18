@@ -12,7 +12,7 @@ import { confirmPaymentByUser, payOrder } from "@/service/order-service";
 export default function BayarPage() {
   const params = useSearchParams();
   const router = useRouter();
-  const orderId = params.get("orderId")!;
+  const orderId = params.get("orderId");
 
   if (!orderId) {
     return (
