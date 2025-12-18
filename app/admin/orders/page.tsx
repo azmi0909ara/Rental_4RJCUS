@@ -48,9 +48,7 @@ export default function OrdersPage() {
             <h1 className="text-3xl font-bold text-slate-800 mb-2">
               Daftar Pesanan
             </h1>
-            <p className="text-slate-600">
-              Pesanan yang sedang berjalan
-            </p>
+            <p className="text-slate-600">Pesanan yang sedang berjalan</p>
           </div>
 
           {/* Orders List */}
@@ -65,7 +63,8 @@ export default function OrdersPage() {
                     {order.nama}
                   </p>
                   <p className="text-sm text-slate-600">
-                    {order.paket.label} • {order.paket.durasi} jam • {order.jaminan}
+                    {order.paket.label} • {order.paket.durasi} jam •{" "}
+                    {order.jaminan}
                   </p>
                 </div>
 
@@ -78,10 +77,8 @@ export default function OrdersPage() {
                     className="border-2 border-slate-200 px-4 py-2 rounded-lg text-black"
                   >
                     <option value="PENDING">🕒 PENDING</option>
-                    <option value="WAITING_CONFIRMATION">⏳ WAITING</option>
                     <option value="PAID">✅ PAID</option>
                     <option value="COMPLETED">✔ COMPLETED</option>
-                    <option value="CANCELLED">❌ CANCELLED</option>
                   </select>
 
                   <span className="font-bold text-slate-800 text-lg">
@@ -98,9 +95,7 @@ export default function OrdersPage() {
               <h3 className="text-lg font-semibold text-slate-700">
                 Tidak ada pesanan aktif
               </h3>
-              <p className="text-slate-500">
-                Semua pesanan sudah selesai 🎉
-              </p>
+              <p className="text-slate-500">Semua pesanan sudah selesai 🎉</p>
             </div>
           )}
         </div>
