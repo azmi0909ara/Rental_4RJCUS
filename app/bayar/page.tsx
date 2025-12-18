@@ -13,6 +13,14 @@ export default function BayarPage() {
   const params = useSearchParams();
   const router = useRouter();
   const orderId = params.get("orderId")!;
+
+  if (!orderId) {
+    return (
+      <main className="min-h-screen flex items-center justify-center bg-black text-white">
+        Order tidak ditemukan
+      </main>
+    );
+  }
   const { order, loading }: any = useOrder(orderId);
 
   const [isPaying, setIsPaying] = useState(false);
