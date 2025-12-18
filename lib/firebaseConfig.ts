@@ -1,5 +1,5 @@
 // lib/firebase.js
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
@@ -13,8 +13,8 @@ const firebaseConfig = {
   measurementId: "G-DWGQCPVPNF",
 };
 
-const app = initializeApp(firebaseConfig);
+// ✅ CEGAH INIT SAAT BUILD
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 
-// Make Auth
 export const auth = getAuth(app);
 export const db = getFirestore(app);
