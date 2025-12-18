@@ -41,6 +41,12 @@ const Sidebar = () => {
       icon: ShoppingCart,
     },
     {
+      id: "history",
+      label: "Riwayat Pesanan",
+      href: "/admin/history",
+      icon: Clock,
+    },
+    {
       id: "inventory",
       label: "Inventory PS",
       href: "/admin/inventory",

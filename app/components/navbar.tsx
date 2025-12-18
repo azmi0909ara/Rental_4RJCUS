@@ -15,6 +15,7 @@ export default function Navbar() {
     { name: "Beranda", href: "/" },
     { name: "Category", href: "/category" },
     { name: "Daftar Harga", href: "/daftar-harga" },
+    { name: "Term & Condition", href: "/term" },
   ];
 
   // Variants animasi

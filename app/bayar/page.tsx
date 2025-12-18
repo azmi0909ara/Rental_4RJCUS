@@ -16,14 +16,15 @@ export default function BayarPage() {
   const [isPaying, setIsPaying] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
 
+  // auto close popup 2 detik
   useEffect(() => {
-    if (showPopup) {
-      const timer = setTimeout(() => {
-        setShowPopup(false);
-      }, 2000);
+    if (!showPopup) return;
 
-      return () => clearTimeout(timer);
-    }
+    const timer = setTimeout(() => {
+      setShowPopup(false);
+    }, 2000);
+
+    return () => clearTimeout(timer);
   }, [showPopup]);
 
   if (loading)
@@ -36,7 +37,7 @@ export default function BayarPage() {
   const handleBayar = async () => {
     try {
       setIsPaying(true);
-      await payOrder(orderId, order.paket?.inventoryId);
+      await payOrder(orderId); // ✅ FIX DI SINI
       setShowPopup(true);
     } catch (err: any) {
       alert(err.message);

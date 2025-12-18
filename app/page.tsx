@@ -41,6 +41,7 @@ export default function Home() {
             Hidupkan Lagi Kenangan Seru Bareng Temen Dan Keluarga. Sewa
             Playstation 3 & 4 Mudah Tanpa Ribet!
           </p>
+          
 
           <div className="flex justify-center gap-4 mt-6">
             {/* Pesan Sekarang */}
@@ -69,6 +70,10 @@ export default function Home() {
               </motion.button>
             </Link>
           </div>
+          <p className="text-sm md:text-base text-orange-300 font-semibold max-w mx-auto flex items-center justify-center gap-2">
+        📍 Blok D3 No.17, Jl. Semeru III, Jatimulya, 
+        Kec. Tambun Selatan, Kab. Bekasi
+        </p>
         </motion.div>
 
         {/* Gradient Bottom */}
@@ -161,6 +166,11 @@ export default function Home() {
       kami berkomitmen untuk menjadikan aktivitas gaming lebih seru,
       praktis, dan tak terlupakan.
     </p>
+
+    <p className="text-sm md:text-base text-orange-300 max-w-xl mx-auto flex items-center justify-center gap-2">
+        📍 Blok D3 No.17, Jl. Semeru III, Jatimulya, 
+        Kec. Tambun Selatan, Kab. Bekasi
+        </p>
   </motion.div>
 </motion.section>
 

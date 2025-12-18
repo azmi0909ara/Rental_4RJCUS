@@ -2,6 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import Navbar from "../components/navbar";
+import { motion } from "framer-motion";
 
 export default function CategoryPage() {
   const psList = [
@@ -35,10 +36,23 @@ export default function CategoryPage() {
           style={{ backgroundImage: "url('/bkg2.jpeg')" }}
         ></div>
         <div className="absolute inset-0 bg-black/60 z-0"></div>
+        
+        {/* CONTENT */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7 }}
+          className="relative z-10 max-w-4xl mx-auto"
+        >
+        <div className="relative z-10 max-w-5xl mx-auto">
+          {/* Breadcrumb + Back Button */}
+          <div className="flex items-center justify-between mb-6">
+            <p className="text-sm text-gray-300">Beranda &gt; Daftar Harga</p>
+          </div>
 
-        <div className="relative z-10 px-6">
+          {/* Title */}
           <h1 className="text-4xl font-extrabold text-center mb-12 text-[#FFD7A1]">
-            Kategori Playstation
+            Daftar Harga Rental Playstation
           </h1>
 
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
@@ -69,6 +83,7 @@ export default function CategoryPage() {
             ))}
           </div>
         </div>
+        </motion.div>
       </main>
     </>
   );

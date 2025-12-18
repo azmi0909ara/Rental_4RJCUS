@@ -1,9 +1,9 @@
 "use client";
-import Link from "next/link";
 import Navbar from "../components/navbar";
 import { useInventory } from "@/hooks/useInventory";
 import { useEffect, useState } from "react";
 import { InventoryItem } from "@/types/Inventory";
+import { motion } from "framer-motion";
 
 type Section = {
   category: string;
@@ -41,15 +41,18 @@ export default function DaftarHargaPage() {
         />
         <div className="absolute inset-0 bg-black/60 z-0"></div>
 
+        {/* CONTENT */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7 }}
+          className="relative z-10 max-w-4xl mx-auto"
+        >
+
         <div className="relative z-10 max-w-5xl mx-auto">
           {/* Breadcrumb + Back Button */}
           <div className="flex items-center justify-between mb-6">
             <p className="text-sm text-gray-300">Beranda &gt; Daftar Harga</p>
-            <Link href="/">
-              <button className="bg-orange-400 text-black px-3 py-1 rounded-lg text-sm hover:bg-orange-500 transition flex items-center gap-1">
-                ← Kembali
-              </button>
-            </Link>
           </div>
 
           {/* Title */}
@@ -98,6 +101,7 @@ export default function DaftarHargaPage() {
             ))
           )}
         </div>
+        </motion.div>
       </main>
     </>
   );
