@@ -23,10 +23,11 @@ export default function TermsPage() {
           transition={{ duration: 0.7 }}
           className="relative z-10 max-w-4xl mx-auto"
         >
-
-{/* Breadcrumb */}
+          {/* Breadcrumb */}
           <div className="flex items-center justify-between mb-6">
-            <p className="text-sm text-gray-300">Beranda &gt; Term & Condition</p>
+            <p className="text-sm text-gray-300">
+              Beranda &gt; Term & Condition
+            </p>
           </div>
 
           {/* TITLE */}
@@ -42,8 +43,8 @@ export default function TermsPage() {
 
             <ul className="list-disc pl-6 space-y-3 text-sm md:text-base">
               <li>
-                Penyewa wajib mengisi data diri secara lengkap dan jelas.
-                Untuk keperluan verifikasi, penyewa diminta menyiapkan identitas
+                Penyewa wajib mengisi data diri secara lengkap dan jelas. Untuk
+                keperluan verifikasi, penyewa diminta menyiapkan identitas
                 berupa <b>KTP / SIM</b>. Data dijamin aman dan hanya digunakan
                 untuk proses penyewaan.
               </li>
@@ -55,8 +56,9 @@ export default function TermsPage() {
               </li>
 
               <li>
-                Durasi sewa dihitung sejak unit diterima oleh penyewa. Keterlambatan
-                pengembalian akan dikenakan <b>denda sesuai ketentuan</b> yang berlaku.
+                Durasi sewa dihitung sejak unit diterima oleh penyewa.
+                Keterlambatan pengembalian akan dikenakan{" "}
+                <b>denda sesuai ketentuan</b> yang berlaku.
               </li>
 
               <li>
@@ -70,14 +72,14 @@ export default function TermsPage() {
               </li>
 
               <li>
-                Konsol tidak diperbolehkan untuk dibongkar, dimodifikasi,
-                atau disewakan kembali kepada pihak lain.
+                Konsol tidak diperbolehkan untuk dibongkar, dimodifikasi, atau
+                disewakan kembali kepada pihak lain.
               </li>
 
               <li>
-                Dengan menekan tombol <b>&quot;Pesan Sekarang&quot;</b>,
-                penyewa dianggap telah membaca, memahami, dan menyetujui
-                seluruh syarat dan ketentuan di atas.
+                Dengan menekan tombol <b>&quot;Pesan Sekarang&quot;</b>, penyewa
+                dianggap telah membaca, memahami, dan menyetujui seluruh syarat
+                dan ketentuan di atas.
               </li>
             </ul>
 

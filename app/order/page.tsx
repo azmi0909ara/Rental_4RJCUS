@@ -7,11 +7,17 @@ import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "@/lib/firebaseConfig";
 import { useInventory } from "@/hooks/useInventory";
 import type { PaketItem, InventorySection } from "@/types/Inventory";
+import { isPaketAvailable } from "@/utils/inventory";
+import { useDevices } from "@/hooks/useDevices";
+import { useOrders } from "@/hooks/useOrders";
 
 export default function OrderPage() {
   const router = useRouter();
   const [error, setError] = useState(false);
   const { inventory, loading } = useInventory();
+  const { devices } = useDevices();
+  const { orders } = useOrders();
+
   console.log("Inventory: ", inventory);
 
   const [form, setForm] = useState<{
@@ -42,6 +48,8 @@ export default function OrderPage() {
   //   { tipe: "PS4", label: "PS AJA", durasi: 12, harga: 50000 },
   //   { tipe: "PS4", label: "PS AJA", durasi: 24, harga: 80000 },
   // ] as const;
+
+  const canSubmit = form.paket && isPaketAvailable(form.paket, devices, orders);
 
   const paketList: PaketItem[] = inventory.map((item: any) => ({
     id: item.id,
@@ -220,20 +228,32 @@ export default function OrderPage() {
                 <div className="space-y-2">
                   {paketPS3.map((item: any) => {
                     const selected = form.paket?.id === item.id;
+                    const available = isPaketAvailable(item, devices, orders);
 
                     return (
                       <label
                         key={item.id}
-                        onClick={() => setForm({ ...form, paket: item })}
-                        className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer
+                        onClick={() =>
+                          available && setForm({ ...form, paket: item })
+                        }
+                        className={`flex items-center justify-between gap-3 p-3 rounded-lg border
+        ${available ? "cursor-pointer" : "opacity-50 cursor-not-allowed"}
         ${
           selected
             ? "bg-orange-400 text-black border-orange-400"
             : "bg-black/40 border-white/10"
         }`}
                       >
-                        {item.tipe} • {item.label} • {item.durasi} jam •{" "}
-                        {item.harga.toLocaleString("id-ID")}
+                        <span>
+                          {item.label} • {item.durasi} jam •{" "}
+                          {item.harga.toLocaleString("id-ID")}
+                        </span>
+
+                        {!available && (
+                          <span className="text-xs text-red-400 font-semibold">
+                            Stok Habis
+                          </span>
+                        )}
                       </label>
                     );
                   })}
@@ -249,20 +269,32 @@ export default function OrderPage() {
                 <div className="space-y-2">
                   {paketPS4.map((item: any) => {
                     const selected = form.paket?.id === item.id;
+                    const available = isPaketAvailable(item, devices, orders);
 
                     return (
                       <label
                         key={item.id}
-                        onClick={() => setForm({ ...form, paket: item })}
-                        className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer
+                        onClick={() =>
+                          available && setForm({ ...form, paket: item })
+                        }
+                        className={`flex items-center justify-between gap-3 p-3 rounded-lg border
+        ${available ? "cursor-pointer" : "opacity-50 cursor-not-allowed"}
         ${
           selected
             ? "bg-orange-400 text-black border-orange-400"
             : "bg-black/40 border-white/10"
         }`}
                       >
-                        {item.tipe} • {item.label} • {item.durasi} jam •{" "}
-                        {item.harga.toLocaleString("id-ID")}
+                        <span>
+                          {item.label} • {item.durasi} jam •{" "}
+                          {item.harga.toLocaleString("id-ID")}
+                        </span>
+
+                        {!available && (
+                          <span className="text-xs text-red-400 font-semibold">
+                            Stok Habis
+                          </span>
+                        )}
                       </label>
                     );
                   })}
@@ -278,6 +310,7 @@ export default function OrderPage() {
               className="px-10 py-3 rounded-xl font-bold text-black shadow-xl disabled:opacity-50"
               style={{ backgroundColor: "#FFA64D" }}
               whileHover={{ scale: 1.05 }}
+              disabled={!canSubmit}
             >
               Setuju & Bayar
             </motion.button>
