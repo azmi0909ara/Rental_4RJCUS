@@ -8,10 +8,21 @@ import { useOrder } from "@/hooks/useOrder";
 import { confirmPaymentByUser, payOrder } from "@/service/order-service";
 
 export default function BayarContent() {
-  const params = useSearchParams();
-  const orderId = params.get("orderId");
-
   const router = useRouter();
+
+  const [mounted, setMounted] = useState(false);
+  const [orderId, setOrderId] = useState<string | null>(null);
+
+  // 🔥 PENTING: ambil search params DI USE EFFECT
+  const params = useSearchParams();
+
+  useEffect(() => {
+    setMounted(true);
+    setOrderId(params.get("orderId"));
+  }, [params]);
+
+  // ⛔ STOP DI SINI SAAT BUILD
+  if (!mounted) return null;
 
   if (!orderId) {
     return (
@@ -20,6 +31,8 @@ export default function BayarContent() {
       </main>
     );
   }
+
+  // 🔥 BARU BOLEH PANGGIL HOOK
   const { order, loading }: any = useOrder(orderId);
 
   const [isPaying, setIsPaying] = useState(false);
