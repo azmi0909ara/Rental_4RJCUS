@@ -1,14 +1,13 @@
-export const dynamic = "force-dynamic";
-
-
 "use client";
+
+export const dynamic = "force-dynamic";
 
 import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { useOrder } from "@/hooks/useOrder";
-import { confirmPaymentByUser, payOrder } from "@/service/order-service";
+import { confirmPaymentByUser } from "@/service/order-service";
 
 export default function BayarPage() {
   const params = useSearchParams();
@@ -19,14 +18,9 @@ export default function BayarPage() {
   const [isPaying, setIsPaying] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
 
-  // auto close popup 2 detik
   useEffect(() => {
     if (!showPopup) return;
-
-    const timer = setTimeout(() => {
-      setShowPopup(false);
-    }, 2000);
-
+    const timer = setTimeout(() => setShowPopup(false), 2000);
     return () => clearTimeout(timer);
   }, [showPopup]);
 
@@ -48,17 +42,17 @@ export default function BayarPage() {
       setIsPaying(false);
     }
   };
+
   const userHasConfirmed = !!order.userConfirmedAt;
+
   return (
     <main className="relative min-h-screen flex flex-col items-center justify-center text-white px-6">
-      {/* BACKGROUND */}
       <div
         className="absolute inset-0 bg-cover bg-center brightness-90"
         style={{ backgroundImage: "url('/bkg2.jpeg')" }}
       />
       <div className="absolute inset-0 bg-black/70" />
 
-      {/* CONTENT */}
       <div className="relative z-10 flex flex-col items-center text-center max-w-md w-full">
         <h1 className="text-2xl font-extrabold mb-4 text-[#FFD7A1]">
           Pembayaran QRIS
@@ -69,7 +63,6 @@ export default function BayarPage() {
           Rp {order?.totalBayar?.toLocaleString("id-ID")}
         </p>
 
-        {/* CATATAN */}
         <div className="text-sm text-gray-300 bg-black/40 border border-white/10 rounded-xl p-4 mb-5 text-left">
           <ul className="space-y-1 list-disc list-inside">
             <li>Bayar sesuai dengan jumlah yang tertera</li>
@@ -78,7 +71,6 @@ export default function BayarPage() {
           </ul>
         </div>
 
-        {/* QR */}
         <Image
           src="/qrisPs.jpg"
           alt="QRIS"
@@ -87,8 +79,6 @@ export default function BayarPage() {
           className="rounded-xl mb-6"
         />
 
-        {/* ACTION */}
-        {/* USER BELUM KONFIRMASI */}
         {order.status === "PENDING" && !userHasConfirmed && (
           <button
             onClick={handleBayar}
@@ -99,7 +89,6 @@ export default function BayarPage() {
           </button>
         )}
 
-        {/* USER SUDAH KONFIRMASI */}
         {order.status === "PENDING" && userHasConfirmed && (
           <div className="mt-6 text-center space-y-2">
             <div className="text-3xl">⏳</div>
@@ -132,7 +121,6 @@ export default function BayarPage() {
         )}
       </div>
 
-      {/* POPUP */}
       <AnimatePresence>
         {showPopup && (
           <motion.div
