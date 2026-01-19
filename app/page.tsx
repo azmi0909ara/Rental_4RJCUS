@@ -71,6 +71,9 @@ export default function Home() {
             </Link>
           </div>
           <p className="text-sm md:text-base text-orange-300 font-semibold max-w mx-auto flex items-center justify-center gap-2">
+        📞 +62 851-5680-3390 contact here
+        </p>
+          <p className="text-sm md:text-base text-orange-300 font-semibold max-w mx-auto flex items-center justify-center gap-2">
         📍 Blok D3 No.17, Jl. Semeru III, Jatimulya, 
         Kec. Tambun Selatan, Kab. Bekasi
         </p>
